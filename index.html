@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Die Suche nach dem letzten Weihnachtszauber</title>
+<meta name="description" content="Mystische Hapimag Rätseltour mit 12 Fragen, Hinweis-Countdown und Buchstaben-Orten. Am Ende ergibt sich ein geheimes Lösungswort." />
+  <base target="_top" />
+  <style>
+    :root{
+      --rot:#d61f3f;--rot-d:#b91c1c;--weiss:#fff;--weiss2:#fff9fa;--text:#1b1b1b;
+      --muted:#7f1d1d;--ok:#16a34a;--err:#dc2626;--shadow:0 18px 50px rgba(0,0,0,.25);
+      --flightDur: 8.2s;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);
+      background:radial-gradient(1300px 600px at 68% -12%, #ffa1b4 0%, #f25572 42%, #d61f3f 72%, #7e0d20 100%);
+      min-height:100%;display:grid;place-items:center;padding:16px;
+    }
+    .wrap{width:min(980px,100%)}
+    .card{
+      background:linear-gradient(180deg,var(--weiss2),#fff);
+      border:1px solid #ffd6dc;border-radius:22px;box-shadow:var(--shadow);
+      padding:18px 18px 20px;position:relative;overflow:hidden
+    }
+    .card::before,.card::after{
+      content:"";position:absolute;left:0;right:0;height:8px;
+      background:repeating-linear-gradient(135deg,var(--weiss) 0 18px,var(--rot) 18px 36px);opacity:.14
+    }
+    .card::before{top:0}.card::after{bottom:0}
+    .head{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+    .title{margin:0;font-size:clamp(1.35rem,2.2vw,1.8rem);color:var(--rot-d)}
+    .sub{margin:.2rem 0 .35rem;color:var(--muted);font-size:.97rem}
+    .badge{display:inline-block;margin:.1rem 0;padding:.15rem .55rem;border-radius:999px;background:#fff5f6;border:1px solid #ffc7d0;color:#b11a2f;font-size:.82rem}
+    .icon{width:54px;height:54px}
+    h2{margin:.8rem 0 .35rem;color:#a0102a;font-size:1.12rem}
+    p{margin:.5rem 0;line-height:1.65}
+    label{display:block;margin:.5rem 0 .35rem}
+    input{width:100%;padding:.9rem 1rem;border-radius:12px;border:2px solid #ffd3da;outline:none;background:#fff;color:#111}
+    input:focus{border-color:#fb7185;box-shadow:0 0 0 6px #fb718522}
+    .row{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.55rem}
+    button{cursor:pointer;border:2px solid #fb7185;background:linear-gradient(180deg,#ff677d,#e11d48);color:#fff;font-weight:700;padding:.85rem 1.15rem;border-radius:12px}
+    button.secondary{background:#fff;color:#b91c1c;border-color:#ffc7d0}
+    button.ghost{background:#fff;border-color:#ffd6dc;color:#9a0f24}
+    button.quiet{background:#fff;border-color:#ffd6dc;color:#7f1d1d}
+    button[disabled]{opacity:.6;cursor:not-allowed}
+    .err{display:none;color:var(--err);margin-top:.55rem;font-weight:600}
+    .ok{display:none;margin-top:.55rem;border:2px solid #86efac;background:#f0fdf4;color:#065f46;padding:.85rem;border-radius:12px}
+    .hint{display:none;margin-top:.6rem;border:2px dashed #fbbf24;background:#fffbea;color:#713f12;padding:.7rem .85rem;border-radius:12px}
+    .loc{display:none;margin-top:.65rem;border:2px solid #c3e7c5;background:#f0fff4;color:#0b5d2a;padding:.75rem .9rem;border-radius:12px;font-weight:600}
+    .footer{margin-top:.9rem;border-top:1px dashed #ffc7d0;padding-top:.75rem;color:#7f1d1d;font-size:.95rem}
+    .countdown{display:none;margin-top:.6rem;border:2px solid #fde68a;background:#fffbeb;color:#92400e;padding:.65rem .8rem;border-radius:12px;font-weight:700}
+
+    /* ❄️ Schnee */
+    .snow{position:absolute;inset:-10px 0 0 0;pointer-events:none;overflow:hidden}
+    .flake{position:absolute;top:-10px;left:var(--x,50%);width:8px;height:8px;background:radial-gradient(#fff,#e2f2ff);border-radius:50%;filter:drop-shadow(0 0 6px #ffffff);opacity:.9;animation:fall var(--t,12s) linear infinite;animation-delay:var(--d,0s)}
+    @keyframes fall{to{transform:translate3d(0,105vh,0) rotate(360deg)}}
+    .bob{animation:bob 2.8s ease-in-out infinite}
+    @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+    /* 🌫️ Intro Overlay + Nebel */
+    .introOverlay{
+      position:fixed;inset:0;z-index:60;display:grid;place-items:center;
+      background:linear-gradient(160deg, rgba(0,0,0,.18), rgba(0,0,0,.1)),
+                 radial-gradient(1000px 600px at 60% -10%, rgba(255,255,255,.16), rgba(255,255,255,0) 70%);
+      backdrop-filter:saturate(1.05) blur(2px)
+    }
+    .introBox{
+      width:min(860px,92vw);max-height:88vh;display:flex;flex-direction:column;
+      background:linear-gradient(180deg,var(--weiss2),#fff);
+      border:1px solid #ffd6dc;border-radius:22px;box-shadow:var(--shadow);position:relative;overflow:hidden
+    }
+    .introInner{padding:22px 22px 18px;overflow:auto;scrollbar-width:thin}
+    .introTitle{margin:.2rem 0 .7rem;font-size:clamp(1.25rem,2.2vw,1.6rem);color:var(--rot-d);text-align:center}
+    .introText{margin:.4rem 0 1.1rem;line-height:1.75;font-size:clamp(1rem,1.1vw,1.06rem);text-align:left}
+    .introFooter{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;align-items:center;padding:12px 16px;border-top:1px dashed #ffc7d0;background:#fff9fb;position:sticky;bottom:0}
+    .introBtns{display:flex;gap:.6rem;flex-wrap:wrap}
+
+    .fog{position:absolute;inset:0;pointer-events:none;z-index:1;opacity:.55}
+    .fog .f{position:absolute;border-radius:50%;filter:blur(26px);background:radial-gradient(closest-side, rgba(255,255,255,.22), rgba(255,255,255,0));animation:fmove 26s ease-in-out infinite}
+    .f.f1{width:360px;height:220px;left:-80px;top:10%}
+    .f.f2{width:420px;height:260px;right:-100px;top:40%;animation-direction:reverse}
+    .f.f3{width:380px;height:240px;left:20%;bottom:-120px}
+    @keyframes fmove{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(28px,-8px,0)}100%{transform:translate3d(0,0,0)}}
+
+    /* ✨ Sterne */
+    .sparkle{position:absolute;inset:0;pointer-events:none;z-index:2;opacity:.7}
+    .spark{position:absolute;width:6px;height:6px;border-radius:50%;background:radial-gradient(#fff,rgba(255,255,255,0));filter:drop-shadow(0 0 6px #fff);animation:blink 2.6s ease-in-out infinite}
+    .spark.s1{left:10%;top:14%;animation-delay:.2s}
+    .spark.s2{left:78%;top:22%;animation-delay:1.1s}
+    .spark.s3{left:22%;top:70%;animation-delay:.6s}
+    .spark.s4{left:64%;top:62%;animation-delay:1.8s}
+    .spark.s5{left:48%;top:8%; animation-delay:.9s}
+    @keyframes blink{0%,100%{opacity:0.15;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}
+
+    /* 🛷 Schlitten mit Motion Path */
+    .cinematic{position:absolute;inset:0;pointer-events:none;z-index:70;display:none}
+    .cinematic.active{display:block}
+    .sleighWrap{position:absolute;width:min(520px,52vw);}
+    .sleighVec{width:100%;height:auto;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25))}
+    @supports (offset-path: path("M0,0 C100,0 300,-80 500,-120")) {
+      .sleighWrap{
+        top:75vh;left:-15vw;
+        offset-path: path("M 0 0 C 25 -40, 55 -80, 85 -110 S 140 -150, 200 -170 S 300 -190, 420 -210 S 520 -220, 640 -220");
+        offset-rotate:auto;
+        animation:flyPath var(--flightDur) ease-in-out forwards, bob 2.4s ease-in-out infinite;
+      }
+      @keyframes flyPath{0%{offset-distance:0%;opacity:0}6%{opacity:1}100%{offset-distance:100%;opacity:1}}
+    }
+    @supports not (offset-path: path("M0,0 C100,0 300,-80 500,-120")) {
+      .sleighWrap{top:18vh;left:-30vw;animation:flyLinear var(--flightDur) cubic-bezier(.25,.1,.25,1) forwards, bob 2.4s ease-in-out infinite;}
+      @keyframes flyLinear{0%{transform:translateX(0) translateY(0) scale(1);opacity:0}10%{opacity:1}50%{transform:translateX(65vw) translateY(-2vh) scale(1.03)}100%{transform:translateX(120vw) translateY(-5vh) scale(1.06);opacity:1}}
+    }
+    @keyframes bob{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-6px) rotate(-0.4deg)}}
+    .trail{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen}
+    .trail span{position:absolute;width:8px;height:8px;border-radius:50%;background:radial-gradient(#fff,rgba(255,255,255,0));filter:drop-shadow(0 0 6px #fff);opacity:.85;animation:trail 1.2s linear infinite;}
+    .trail span.g{width:10px;height:10px;background:radial-gradient(#e11d48,rgba(225,29,72,0))}
+    @keyframes trail{0%{transform:translate(0,0) scale(1);opacity:.9}100%{transform:translate(-120px,60px) scale(.2);opacity:0}}
+    @media (prefers-reduced-motion: reduce){
+      .flake,.bob,.f,.spark,.sleighWrap,.trail span{animation:none !important}
+    }
+    @media (max-width: 520px){
+      body{padding:10px}
+      .icon{width:46px;height:46px}
+      .wrap{width:100%}
+      input{padding:.8rem .9rem}
+      .introInner{padding:18px}
+      .introFooter{justify-content:center}
+    }
+  </style>
+
+  <script>
+    var START_STATION = (typeof START_STATION === 'undefined') ? 1 : START_STATION;
+  </script>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <!-- Intro -->
+      <section id="intro" class="introOverlay" aria-labelledby="introTitle" aria-describedby="introStory">
+        <div class="introBox">
+          <div class="fog" aria-hidden="true">
+            <div class="f f1"></div><div class="f f2"></div><div class="f f3"></div>
+          </div>
+          <div class="sparkle" aria-hidden="true">
+            <div class="spark s1"></div><div class="spark s2"></div><div class="spark s3"></div><div class="spark s4"></div><div class="spark s5"></div>
+          </div>
+
+          <!-- Cinematic -->
+          <div id="cinematic" class="cinematic" aria-hidden="true">
+            <div id="sleighWrap" class="sleighWrap">
+              <svg class="sleighVec" viewBox="0 0 900 220" aria-hidden="true">
+                <g fill="#b91c1c" stroke="#9a0f24" stroke-width="2">
+                  <g transform="translate(80,30) scale(1.05)"><path d="M40,150 c40,-70 120,-70 160,0 l-18,10 -34,0 -10,18 -40,0 -14,-18 -34,0 z"/></g>
+                  <g transform="translate(230,20) scale(1.1)"><path d="M40,150 c40,-70 120,-70 160,0 l-18,10 -34,0 -10,18 -40,0 -14,-18 -34,0 z"/></g>
+                  <g transform="translate(380,10) scale(1.15)"><path d="M40,150 c40,-70 120,-70 160,0 l-18,10 -34,0 -10,18 -40,0 -14,-18 -34,0 z"/></g>
+                  <path d="M520,120 C470,110 420,110 360,115" fill="none"/>
+                  <path d="M520,124 C450,124 420,128 330,130" fill="none"/>
+                  <g transform="translate(540,70)">
+                    <path d="M0,80 C30,70 100,70 150,80 L150,90 C100,82 30,82 0,90 Z" />
+                    <path d="M10,20 h150 v50 a10,10 0 0 1 -10,10 h-130 a10,10 0 0 1 -10,-10 z" fill="#e11d48"/>
+                    <circle cx="40" cy="28" r="16" fill="#fff"/>
+                    <rect x="35" y="40" width="40" height="14" rx="6" fill="#fde047" stroke="#b45309" />
+                    <rect x="115" y="26" width="22" height="22" fill="#fde047" stroke="#b45309"/><line x1="126" y1="26" x2="126" y2="48" stroke="#b45309"/>
+                  </g>
+                </g>
+              </svg>
+              <div class="trail" id="trail"></div>
+            </div>
+          </div>
+
+          <div class="introInner">
+            <h2 id="introTitle" class="introTitle">Die Suche nach dem letzten Weihnachtszauber</h2>
+            <div id="introStory" class="introText">
+              In der längsten Nacht des Winters liegt das alte Haus still im Schnee – und doch scheint es zu atmen.
+              Drinnen flackert ein schwaches Licht, als würde jemand warten. Vor langer Zeit vergaß das Christkind hier ein letztes Geschenk.
+              Eine Truhe, versiegelt mit einem Zahlencode, den selbst der Himmel nicht mehr kennt. Seit jener Nacht ruht der Weihnachtszauber in ihr – unerweckt, unerlöst.
+              <br><br>
+              Doch das Haus ist nicht stumm. Es flüstert Rätsel durch seine Flure, lässt Schatten tanzen und Kerzen flackern, als wollten sie führen.
+              Wer genau hinhört, spürt, dass die Antworten überall verborgen sind – im Knirschen des Schnees, im Wispern des Windes, in Zeichen, die nur im rechten Moment sichtbar werden.
+              <br><br>
+              Drei Ziffern öffnen die Truhe. Zwölf schwere Rätsel führen dorthin. Folge dem Ruf der Nacht, lausche den Hinweisen – und vielleicht wirst du das Geschenk finden, das das Christkind selbst vergessen hat.
+            </div>
+          </div>
+
+          <div class="introFooter">
+            <div class="introBtns">
+              <button type="button" id="introRead" class="quiet" aria-pressed="false">▶️ Vorlesen</button>
+              <button type="button" id="introStart" class="introBtn">Weiter zur Rätseltour ✨</button>
+            </div>
+            <audio id="narration" preload="auto" src="ElevenLabs_Text_to_Speech_audio.mp3"></audio>
+          </div>
+        </div>
+      </section>
+
+      <div class="snow" id="snow" aria-hidden="true"></div>
+
+      <header class="head" aria-live="polite">
+        <svg class="icon" viewBox="0 0 64 64" aria-hidden="true">
+          <rect x="28" y="50" width="8" height="10" rx="2" fill="#7c3a1d"/>
+          <path d="M32 6 L38 12 L34 12 L40 18 L34 18 L42 26 L34 26 L46 38 L18 38 L30 26 L22 26 L30 18 L24 18 L30 12 L26 12 Z" fill="#0d7a3a" stroke="#0a5a2b" stroke-width="1.5"/>
+          <circle cx="28" cy="18" r="2" fill="#ffd166"/><circle cx="36" cy="21" r="2" fill="#ef476f"/><circle cx="30" cy="28" r="2" fill="#06d6a0"/><circle cx="40" cy="32" r="2" fill="#ffd166"/><circle cx="24" cy="34" r="2" fill="#ef476f"/>
+          <polygon points="32,4 34,8 38,8 35,10 36,14 32,12 28,14 29,10 26,8 30,8" fill="#ffd166"/>
+        </svg>
+        <div>
+          <h1 class="title">Willkommen zur Hapimag Rätseltour</h1>
+          <p class="sub">Nutzt du den <strong>Hinweis</strong>, müsst ihr nach richtiger Lösung <strong>60&nbsp;Sekunden</strong> warten.</p>
+          <span class="badge" id="badge">Station</span>
+        </div>
+        <svg class="icon bob" viewBox="0 0 128 128" aria-hidden="true">
+          <circle cx="64" cy="64" r="60" fill="#fff5f5" stroke="#ffc7d0" stroke-width="4"/>
+          <path d="M18 68c10-20 40-28 92-26-6-12-20-22-46-22S24 34 18 68z" fill="#e11d48"/>
+          <circle cx="64" cy="72" r="22" fill="#fde68a"/><circle cx="54" cy="70" r="4" fill="#7f1d1d"/><circle cx="74" cy="70" r="4" fill="#7f1d1d"/>
+          <rect x="50" y="82" width="28" height="6" rx="3" fill="#fca5a5"/><circle cx="22" cy="60" r="10" fill="#fff"/><circle cx="106" cy="44" r="8" fill="#fff"/>
+        </svg>
+      </header>
+
+      <h2 id="t">Rätsel</h2>
+      <p id="riddle"></p>
+
+      <div class="row">
+        <button type="button" id="hintBtn" class="ghost">💡 Hinweis anzeigen</button>
+      </div>
+      <div id="hintBox" class="hint" role="note"></div>
+
+      <form id="form">
+        <label for="answer">Deine Antwort</label>
+        <input id="answer" placeholder="Antwort eingeben …" autocomplete="off" />
+
+        <!-- ➕ NEU: Buchstaben-Eingabe nach Ort -->
+        <div id="letterStep" style="display:none;margin-top:.9rem">
+          <label for="letter"><strong>Buchstabe vom Ort</strong></label>
+          <input id="letter" placeholder="Buchstabe eingeben …" maxlength="1" inputmode="text" />
+          <div class="row">
+            <button type="button" id="checkLetter">Buchstabe bestätigen</button>
+          </div>
+        </div>
+
+        <div class="row" id="answerActions">
+          <button type="submit" id="checkBtn">Antwort prüfen</button>
+          <button type="button" id="next" class="secondary" style="display:none" disabled>Weiter zur nächsten Station</button>
+        </div>
+        <div id="err" class="err" role="alert">Leider falsch – versuch’s nochmal!</div>
+        <div id="ok" class="ok" role="status">✅ Richtig! <span id="nextInfo">Klicke unten auf <strong>Weiter</strong>.</span></div>
+        <div id="countdown" class="countdown" role="status" aria-live="assertive"></div>
+      </form>
+
+      <div id="locHint" class="loc" role="status"></div>
+
+      <div class="footer">
+        <div>
+          <strong>So funktioniert’s:</strong>
+          Löse jedes Rätsel. Nach der richtigen Lösung erhältst du einen <strong>genauen Ort</strong>.
+          Dort findest du einen <strong>Buchstaben</strong>. Gib ihn hier ein – nur der richtige führt weiter.
+          Am Ende ordnet ihr alle Buchstaben zum Lösungswort <strong>???</strong> und sagt es an der <strong>Rezeption</strong>.
+          Dort erfahrt ihr, wo der dreistellige Code versteckt ist. Viel Erfolg! ✨
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* Schnee */
+    (function snow(){
+      const c=document.getElementById('snow');
+      for(let i=0;i<70;i++){
+        const s=document.createElement('div');
+        s.className='flake';
+        s.style.setProperty('--x', Math.random()*100+'%');
+        s.style.setProperty('--t', (9+Math.random()*10)+'s');
+        s.style.setProperty('--d', (Math.random()*8)+'s');
+        s.style.width=s.style.height=(5+Math.random()*7)+'px';
+        c.appendChild(s);
+      }
+      for(let i=0;i<12;i++){
+        const s=document.createElement('div');
+        s.className='flake';
+        s.style.setProperty('--x', (i*8+Math.random()*6)+'%');
+        s.style.setProperty('--t', (10+Math.random()*6)+'s');
+        s.style.setProperty('--d', (Math.random()*6)+'s');
+        s.style.width=s.style.height=(5+Math.random()*5)+'px';
+        c.appendChild(s);
+      }
+    })();
+
+    /* Vorlesen */
+    (function narrationSetup(){
+      const btn = document.getElementById('introRead');
+      const audio = document.getElementById('narration');
+      if(!btn || !audio) return;
+      let playing=false;
+      const setLabel=()=>{ btn.textContent = playing ? '⏸️ Pause' : '▶️ Vorlesen'; btn.setAttribute('aria-pressed', String(playing)); };
+      btn.addEventListener('click', async ()=>{
+        try{
+          if(!playing){ audio.currentTime = 0; await audio.play(); playing=true; }
+          else{ audio.pause(); playing=false; }
+          setLabel();
+        }catch(err){ console.error(err); alert('Konnte die Erzählung nicht starten. Prüfe Dateinamen und Pfad der MP3.'); }
+      });
+      audio.addEventListener('ended', ()=>{ playing=false; setLabel(); });
+      audio.addEventListener('pause', ()=>{ playing=false; setLabel(); });
+      setLabel();
+    })();
+
+    /* Schlitten + Trail + Übergang */
+    (function cinematicSetup(){
+      const start = document.getElementById('introStart');
+      const intro = document.getElementById('intro');
+      const sleighWrap = document.getElementById('sleighWrap');
+      const cin = document.getElementById('cinematic');
+      const trail = document.getElementById('trail');
+      function spawnTrail(){
+        const dot=document.createElement('span'); trail.appendChild(dot);
+        const r=sleighWrap.getBoundingClientRect();
+        dot.style.left=(r.left + r.width*0.25)+'px';
+        dot.style.top =(r.top  + r.height*0.65)+'px';
+        if(Math.random()<0.25){ dot.classList.add('g'); }
+        setTimeout(()=>dot.remove(),1100);
+      }
+      start.addEventListener('click', ()=>{
+        const audio = document.getElementById('narration'); if(audio){ audio.pause(); audio.currentTime=0; }
+        cin.classList.add('active');
+        const t=setInterval(spawnTrail,90);
+        setTimeout(()=>{ clearInterval(t); intro.style.display='none'; document.getElementById('answer')?.focus(); },
+          1000 + parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--flightDur'))*1000);
+      });
+    })();
+
+    /* Run-ID */
+    function ensureRunId(){
+      const u=new URL(window.location.href); let run=u.searchParams.get('run');
+      if(!run){ run=Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4); u.searchParams.set('run',run); history.replaceState(null,'',u.toString()); }
+      return run;
+    }
+    const RUN_ID = ensureRunId();
+
+    /* Rätsel (gleich wie zuletzt, weihnachtlich) */
+    const STATIONS=[
+      null,
+      {id:1, title:'Vier Lichter auf einem Kreis', riddle:`Ich zähle Wochen bis zur Nacht,\ndie Hoffnung, Stille, Freude macht.\nMit Tannengrün und Kerzenschein –\nwer darf auf eurem Tische sein?`, hint:`Vier Kerzen, Rund aus Tanne – erster Advent bis Weihnachten.`, answers:['adventskranz','der adventskranz','advents-kranz']},
+      {id:2, title:'Kuss unter Zweigen', riddle:`Ich hänge still und tu doch viel:\nEin Zweig, der schenkt den kleinen Deal –\nwer drunter steht, bekommt oft Küsse.\nWie heiß’ ich, grün mit weißen Grüßen?`, hint:`Wintergrüner Glücksbringer, Tradition zum Küssen.`, answers:['mistel','mistelzweig','der mistelzweig']},
+      {id:3, title:'Dunkle Nasen, leise Hufe', riddle:`Ich zieh’ den Schlitten durch die Nacht,\nmit Atemwolke, stiller Pracht.\nMal rot die Nase, mal im Rudel –\nwer bin ich, flink auf winterlichem Kuddel?`, hint:`Rudeltier des Nordens, führt den Schlitten.`, answers:['rentier','rentiere','das rentier']},
+      {id:4, title:'Spuren im Pulver', riddle:`Ich fliege, doch ich habe Kufen,\nzieh’ Linien über weiße Stufen.\nOhne Flügel, ohne Motor –\nwie heiß’ ich, Winterfahrzeug vor?`, hint:`Kufen, Lenker manchmal, fährt bergab.`, answers:['schlitten','rodel','rodel-schlitten']},
+      {id:5, title:'Stern, der schmeckt', riddle:`Sechs Zacken, zart und süß gewürzt,\nmit Zuckerguss, der Kinder stürzt.\nEin Hauch von Zimt an Wintertagen –\nwelches Plätzchen will ich sagen?`, hint:`Klassisches Weihnachtsgebäck, sternförmig.`, answers:['zimtstern','der zimtstern','zimt- stern']},
+      {id:6, title:'Honig in Formen', riddle:`Ich dufte warm nach Nelken, Honig,\ntrage Herzen, Häuser, Kronen könig.\nAuf Märkten bin ich überall –\nwie heiß’ ich, braun und fest vor allem?`, hint:`Gebäck mit Zuckerschrift oder Herzform.`, answers:['lebkuchen','lebkuchenherz','lebkuchen-herz']},
+      {id:7, title:'Rote Blätter, weiße Sterne', riddle:`Ich blüh’ im Winter still im Haus,\nmit rotem Kleid und Sternen aus.\nBin Pflanze, nicht der Himmelsgast –\nwie heiß’ ich, der in Fenstern passt?`, hint:`Zimmerpflanze zur Weihnachtszeit, rotes Hochblatt.`, answers:['weihnachtsstern','pflanze weihnachtsstern','euphorbia pulcherrima']},
+      {id:8, title:'Stille in Holz', riddle:`Ich zeige Stroh, ein Kind, zwei Leute,\nund Tiere wachen still wie heute.\nAus Holz geschnitzt, im Zimmer mild –\nwie heißt das Bild vom Weihnachtskind?`, hint:`Darstellung der Heiligen Familie.`, answers:['krippe','weihnachtskrippe','krippenszene']},
+      {id:9, title:'Glanz im Zweig', riddle:`Ich spiegel Lichter, funkel rund,\nbin zart aus Glas und kugelrund.\nAm Nadelkleid häng’ ich sehr gern –\nwie heiß’ ich, kleiner Weihnachtsstern?`, hint:`Runde Deko am Baum.`, answers:['christbaumkugel','weihnachtskugel','baumkugel','kugel']},
+      {id:10, title:'Stiefelwunder', riddle:`Ich komme früh im Dezember an,\nbring Nüsse, Mandeln, Apfel dann.\nIm Stiefel lass’ ich meine Spur –\nwer bin ich, Helfer auf der Tour?`, hint:`Brauchtum am 6.12., nicht der Weihnachtsmann.`, answers:['nikolaus','sankt nikolaus','der nikolaus','st. nikolaus']},
+      {id:11, title:'Licht, das Wege zeigt', riddle:`Ich wies den Königen die Bahn,\nstand überm Stall und blieb voran.\nKein Flugzeug – doch ein Himmelsfreund –\nwie heißt der Stern, dem man noch heut’ vertraut?`, hint:`Biblischer Himmelskörper.`, answers:['stern von bethlehem','bethlehemstern','der stern von bethlehem']},
+      {id:12, title:'Wenn die Glocken leise werden', riddle:`Ich bin die Nacht, bevor es tagt,\nwo man das schönste „Endlich!“ sagt.\nGeschenke, Frieden, Kerzenlicht –\nwie heiß’ ich, wenn die Feier spricht?`, hint:`Der Abend mit Bescherung.`, answers:['heiligabend','heiliger abend','christabend','heilige nacht']}
+    ];
+
+    /* Orte & erwartete Buchstaben je Station (1..12) */
+    const LETTER_PLACES = {
+      1:{place:'Bücherecke',           letter:'N'},
+      2:{place:'Skikeller',            letter:'S'},
+      3:{place:'Honesty Shop',         letter:'Z'},
+      4:{place:'Müllraum',             letter:'H'},
+      5:{place:'Sauna',                letter:'E'},
+      6:{place:'Oberstes Stockwerk',   letter:'E'},
+      7:{place:'Wohnungstür 11',       letter:'K'},
+      8:{place:'Außeneingang Skikeller',letter:'E'},
+      9:{place:'Weihnachtsbaum',       letter:'R'},
+      10:{place:'Wohnungstür 35',      letter:'C'},
+      11:{place:'Eingangstür Heizkeller',letter:'N'},
+      12:{place:'Rezeption',           letter:'I'}
+    };
+
+    /* DOM */
+    const els={
+      badge:document.getElementById('badge'),
+      t:document.getElementById('t'),
+      riddle:document.getElementById('riddle'),
+      form:document.getElementById('form'),
+      answer:document.getElementById('answer'),
+      checkBtn:document.getElementById('checkBtn'),
+      err:document.getElementById('err'),
+      ok:document.getElementById('ok'),
+      nextInfo:document.getElementById('nextInfo'),
+      next:document.getElementById('next'),
+      hintBtn:document.getElementById('hintBtn'),
+      hintBox:document.getElementById('hintBox'),
+      countdown:document.getElementById('countdown'),
+      locHint:document.getElementById('locHint'),
+      letterStep:document.getElementById('letterStep'),
+      letter:document.getElementById('letter'),
+      checkLetter:document.getElementById('checkLetter'),
+      answerActions:document.getElementById('answerActions')
+    };
+
+    /* Utils */
+    function normalize(s){
+      return (s||'').toString().trim().toLowerCase()
+        .normalize('NFD').replace(/\p{Diacritic}+/gu,'')
+        .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
+        .replace(/\s+/g,' ');
+    }
+    const KEY = `xmasRallye::${RUN_ID}`;
+    function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(_){ return {}; } }
+    function save(x){ try{ localStorage.setItem(KEY, JSON.stringify(x)); }catch(_){} }
+    function setWaitUntil(stationId, ts){ const st=load(); st[`wait_${stationId}`]=ts; save(st); }
+    function getWaitUntil(stationId){ const st=load(); return st[`wait_${stationId}`]||0; }
+    function clearWait(stationId){ const st=load(); delete st[`wait_${stationId}`]; save(st); }
+    function highestSolved(){ const st=load(); let last=0; for(let i=1;i<=12;i++){ if(st[`station_${i}`]?.solved) last=i; else break; } return last; }
+    function getRequestedStation(){ const u=new URL(window.location.href); return Math.max(1, Math.min(12, parseInt(u.searchParams.get('station')||START_STATION||1,10))); }
+
+    /* State */
+    let requested = getRequestedStation();
+    let current = Math.min(requested, highestSolved()+1);
+    let usedHintThisStation = false;
+    let countdownTimer = null;
+    let awaitingLetter = false;
+
+    function clearCountdown(){
+      if(countdownTimer){ clearInterval(countdownTimer); countdownTimer=null; }
+      els.countdown.style.display='none';
+      els.countdown.textContent='';
+      els.checkBtn.disabled = false;
+      els.answer.disabled = false;
+    }
+    function startCountdown(seconds){
+      let left = seconds;
+      els.countdown.style.display='block';
+      const upd=()=>{ els.countdown.innerHTML = `🎄 Ein Hauch Weihnachtszauber: Bitte warte <strong>${left}</strong> Sekunden – dann geht’s weiter. ✨`; };
+      upd();
+      els.next.style.display='none';
+      els.next.disabled = true;
+      els.checkBtn.disabled = true;
+      els.answer.disabled = true;
+      els.letter.disabled = true;
+      els.checkLetter.disabled = true;
+      countdownTimer = setInterval(()=>{
+        left--;
+        if(left<=0){
+          clearCountdown();
+          els.letter.disabled = false;
+          els.checkLetter.disabled = false;
+          els.next.disabled = false;
+          els.next.style.display='inline-block';
+          els.nextInfo.textContent = 'Die Wartezeit ist vorbei – klicke unten auf Weiter.';
+        }else{ upd(); }
+      },1000);
+    }
+
+    function render(stationIdx){
+      const S = STATIONS[stationIdx];
+      if(!S){ stationIdx=1; current=1; return render(1); }
+      usedHintThisStation = false; awaitingLetter=false; clearCountdown();
+
+      els.badge.textContent=`Station ${stationIdx} / 12`;
+      els.t.textContent=S.title||'Rätsel';
+      els.riddle.textContent=S.riddle;
+
+      els.err.style.display='none';
+      els.ok.style.display='none';
+      els.next.style.display='none';
+      els.next.disabled = true;
+      els.hintBox.style.display='none'; els.hintBox.textContent='';
+      els.locHint.style.display='none'; els.locHint.textContent='';
+      els.answer.value=''; els.answer.disabled = false;
+      els.letter.value=''; els.letterStep.style.display='none';
+      els.checkBtn.style.display='inline-block';
+      els.answerActions.style.display='flex';
+
+      const u=new URL(window.location.href);
+      u.searchParams.set('station', String(stationIdx));
+      history.replaceState(null,'',u.toString());
+
+      const st=load();
+      const solved = !!st[`station_${S.id}`]?.solved;
+      if(solved){
+        els.next.disabled=false;
+        els.next.style.display='inline-block';
+      }
+
+      setTimeout(()=>els.answer.focus(), 0);
+    }
+
+    /* Hinweis */
+    els.hintBtn.addEventListener('click', ()=>{
+      const S = STATIONS[current];
+      els.hintBox.textContent = S.hint || 'Kein Hinweis verfügbar.';
+      els.hintBox.style.display='block';
+      usedHintThisStation = true;
+    });
+
+    /* Antwort prüfen (Schritt 1) */
+    els.form.addEventListener('submit',(e)=>{
+      e.preventDefault();
+      if(awaitingLetter) return; // in diesem Schritt ignorieren
+      const S=STATIONS[current];
+      const val=normalize(els.answer.value);
+      const ok=S.answers.some(a=> normalize(a)===val );
+      if(ok){
+        els.err.style.display='none';
+        els.ok.style.display='block';
+        // zeige exakten Ort + Buchstaben-Eingabe
+        const lp = LETTER_PLACES[S.id];
+        els.locHint.style.display='block';
+        els.locHint.innerHTML = `📍 <strong>Ort:</strong> ${lp.place}<br>Finde dort den Buchstaben und gib ihn unten ein.`;
+        els.letterStep.style.display='block';
+        els.answer.disabled = true;
+        els.checkBtn.style.display='none';
+        awaitingLetter = true;
+        setTimeout(()=>els.letter.focus(), 50);
+      }else{
+        els.err.style.display='block';
+      }
+    });
+
+    /* Buchstaben prüfen (Schritt 2) */
+    els.checkLetter.addEventListener('click', ()=>{
+      if(!awaitingLetter) return;
+      const S=STATIONS[current];
+      const expected = (LETTER_PLACES[S.id].letter||'').toUpperCase();
+      const got = (els.letter.value||'').trim().toUpperCase();
+      if(got === expected){
+        // Fortschritt speichern
+        const st=load(); st[`station_${S.id}`]={solved:true}; save(st);
+        // Countdown-Logik wie gehabt NACH erfolgreichem Buchstaben
+        if(S.id===12){
+          els.next.style.display='none';
+          els.locHint.innerHTML += `<br><br>🎉 <strong>Geschafft!</strong> Sammle nun alle Buchstaben und bilde das Wort. Tipp: Es heißt <em>nicht</em> automatisch in der richtigen Reihenfolge. Sag das Lösungswort an der <strong>Rezeption</strong>.`;
+        }else{
+          if(usedHintThisStation){
+            const until = Date.now() + 60*1000;
+            setWaitUntil(S.id, until);
+            startCountdown(60);
+          }else{
+            els.next.disabled=false;
+            els.next.style.display='inline-block';
+          }
+        }
+      }else{
+        els.err.style.display='block';
+        els.err.textContent='Der Buchstabe stimmt nicht – schau am Ort nochmal genau hin!';
+        setTimeout(()=>{ els.err.textContent='Leider falsch – versuch’s nochmal!'; }, 2500);
+      }
+    });
+
+    /* Weiter */
+    els.next.addEventListener('click', ()=>{
+      const S = STATIONS[current];
+      const solved = !!load()[`station_${S.id}`]?.solved;
+      const waitLeft = getWaitUntil(S.id) - Date.now();
+      if(!solved || waitLeft > 0 || els.next.disabled){ return; }
+      current = Math.min(12, current+1);
+      render(current);
+    });
+
+    /* Start */
+    const req = getRequestedStation();
+    current = Math.min(req, highestSolved()+1);
+    render(current);
+  </script>
+</body>
+</html>
