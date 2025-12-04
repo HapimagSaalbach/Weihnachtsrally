@@ -3,314 +3,272 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Die Suche nach dem letzten Weihnachtszauber – Hapimag Saalbach</title>
+  <title>Der letzte Weihnachtszauber</title>
 
-  <style>
-    :root{
-      --wald: #0e2e1f;
-      --moos: #1f6f49;
-      --rot: #b11c1f;
-      --hell: #fff;
-      --bg: rgba(255,255,255,0.96);
-      --radius: 22px;
-      --shadow: 0 12px 40px rgba(0,0,0,0.28);
-    }
+<style>
+:root{
+  --rot:#d61f3f;--rot-d:#b91c1c;--weiss:#fff;--weiss2:#fff9fa;--text:#1b1b1b;
+  --muted:#7f1d1d;--ok:#16a34a;--err:#dc2626;--shadow:0 18px 50px rgba(0,0,0,.25);
+  --radius:22px;
+}
 
-    *{ box-sizing:border-box; }
+/* Hintergrund */
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
 
-    body{
-      margin:0;
-      font-family: system-ui, Arial, sans-serif;
-      background-image: url("Winterlandschaft.jpg");
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      color:#0e3020;
-      min-height:100vh;
-    }
+  background-image:url("Winterlandschaft.jpg");
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center top;
+  background-color:#e6f3ff;
 
-    .wrap{
-      width:min(980px,100%);
-      margin:auto;
-      padding:18px;
-    }
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:16px;
+  color:var(--text);
+}
 
-    .card{
-      background:var(--bg);
-      padding:22px;
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      backdrop-filter: blur(3px);
-    }
+/* Hapimag Logo */
+#hapilogo{
+  position:fixed;
+  top:10px;
+  right:10px;
+  width:140px;
+  opacity:0.9;
+  z-index:9999;
+}
 
-    /* ---------- HEADER ---------- */
-    .head{
-      display:grid;
-      grid-template-columns:auto 1fr auto;
-      gap:12px;
-      align-items:center;
-    }
+.wrap{width:min(980px,100%)}
+.card{
+  background:linear-gradient(180deg,var(--weiss2),#fff);
+  border:1px solid #ffd6dc;
+  border-radius:22px;
+  box-shadow:var(--shadow);
+  padding:18px;
+  position:relative;
+  overflow:hidden;
+}
 
-    .logo-small{
-      width:80px;
-      opacity:0.85;
-    }
+.head{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:12px;
+  align-items:center;
+}
+.title{
+  font-size:clamp(1.4rem,2vw,2rem);
+  color:var(--rot-d);
+  margin:0;
+}
+.sub{
+  color:#7f1d1d;
+  margin:4px 0;
+}
+.badge{
+  display:inline-block;
+  padding:4px 12px;
+  background:#fff5f6;
+  border:1px solid #ffc7d0;
+  border-radius:999px;
+}
 
-    .tree-icon{
-      width:60px;
-    }
+h2{color:#a0102a;margin-top:12px;}
+input{
+  width:100%;
+  padding:.9rem 1rem;
+  border:2px solid #ffd3da;
+  border-radius:12px;
+  margin-top:.4rem;
+}
+button{
+  padding:.85rem 1.2rem;
+  border-radius:12px;
+  cursor:pointer;
+  border:2px solid #e11d48;
+  background:linear-gradient(180deg,#ff677d,#e11d48);
+  color:white;
+  font-weight:700;
+}
+button.secondary{
+  background:white;
+  color:#b91c1c;
+  border-color:#ffc7d0;
+}
+.err{
+  display:none;
+  color:var(--err);
+  font-weight:600;
+  margin-top:.6rem;
+}
+.ok{
+  display:none;
+  margin-top:.6rem;
+  background:#f0fdf4;
+  border:2px solid #86efac;
+  color:#065f46;
+  padding:.8rem;
+  border-radius:12px;
+}
+.loc{
+  display:none;
+  margin-top:.6rem;
+  background:#f0fff4;
+  border:2px solid #b5e7cd;
+  padding:.9rem;
+  border-radius:12px;
+  font-weight:600;
+}
 
-    h1.title{
-      margin:0;
-      color:var(--rot);
-      font-size:clamp(1.7rem,2.4vw,2rem);
-    }
-    .sub{
-      margin:2px 0 5px;
-      font-size:.9rem;
-      color:#255144;
-    }
-    .badge{
-      display:inline-block;
-      margin-top:4px;
-      padding:4px 11px;
-      background:#fff3f3;
-      border-radius:14px;
-      border:1px solid #ffd0d0;
-      color:#b11c1f;
-      font-size:.85rem;
-    }
+/* POPUP */
+.fullOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.45);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:99999;
+}
 
-    /* ---------- BUTTONS ---------- */
-    button{
-      cursor:pointer;
-      padding:1rem 1.4rem;
-      border-radius:16px;
-      background:var(--rot);
-      border:2px solid var(--rot);
-      color:white;
-      font-weight:700;
-      font-size:1rem;
-      transition:.22s;
-    }
-    button:hover{
-      filter:brightness(1.15);
-    }
-    button.secondary{
-      background:white;
-      color:var(--rot);
-    }
-    button:disabled{
-      opacity:.45;
-      cursor:not-allowed;
-    }
+.popupBox{
+  width:min(90%,480px);
+  background:white;
+  border-radius:20px;
+  padding:22px;
+  text-align:center;
+  box-shadow:var(--shadow);
+}
 
-    /* ---------- INPUTS ---------- */
-    label{
-      font-weight:600;
-      margin-top:1.1rem;
-      display:block;
-    }
+.popup-zirbel{
+  width:180px;
+  display:block;
+  margin:auto;
+}
 
-    input{
-      width:100%;
-      padding:.9rem 1rem;
-      border:2px solid #c9e6d4;
-      border-radius:14px;
-      font-size:1rem;
-      margin-top:.3rem;
-      outline:none;
-    }
+/* Puzzle */
+.puzzleBox{
+  width:min(900px,92%);
+  background:white;
+  border-radius:22px;
+  padding:26px;
+  text-align:center;
+}
+.puzzleSlots,.puzzleLetters{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-top:20px;
+}
+.slot,.letterTile{
+  width:60px;
+  height:60px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.8rem;
+  font-weight:800;
+}
+.slot{
+  border:2px dashed #bfe8cf;
+  color:#1f6f49;
+  background:#f8fffb;
+}
+.letterTile{
+  background:#d61f3f;
+  color:white;
+  cursor:grab;
+}
 
-    /* ---------- FEEDBACK ---------- */
-    .err{
-      display:none;
-      color:#c62828;
-      margin-top:.7rem;
-      font-weight:700;
-    }
-    .ok{
-      display:none;
-      margin-top:.7rem;
-      background:#e8ffe8;
-      border:2px solid #62c06c;
-      padding:.9rem 1rem;
-      border-radius:16px;
-      color:#115b17;
-      font-weight:700;
-    }
-
-    .loc{
-      display:none;
-      background:#e6f7ef;
-      border:2px solid #b7e8d0;
-      padding:1rem;
-      margin-top:1rem;
-      border-radius:14px;
-      font-weight:700;
-    }
-
-    /* ---------- OVERLAYS ---------- */
-    .fullOverlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,0.55);
-      backdrop-filter:blur(4px);
-      z-index:1000;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
-    }
-    .introBox, .popupBox, .puzzleBox{
-      width:min(900px,92%);
-      max-height:92vh;
-      background:white;
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      display:flex;
-      flex-direction:column;
-    }
-    .introInner, .popupInner{
-      padding:24px;
-      text-align:center;
-      overflow-y:auto;
-    }
-    .intro-zirbel{
-      max-width:260px;
-      margin:auto;
-      display:block;
-    }
-    .popup-zirbel{
-      max-width:300px;
-      margin:auto;
-      display:block;
-    }
-
-    /* ---------- PUZZLE ---------- */
-    .puzzleSlots, .puzzleLetters{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      justify-content:center;
-      margin-top:20px;
-    }
-    .slot, .letterTile{
-      width:64px;
-      height:64px;
-      border-radius:14px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:1.8rem;
-      font-weight:800;
-      user-select:none;
-    }
-    .slot{
-      background:#f4fff8;
-      border:2px dashed #bfe8cf;
-      color:var(--moos);
-    }
-    .letterTile{
-      background:var(--rot);
-      color:white;
-      cursor:grab;
-    }
-  </style>
+/* Mobile */
+@media(max-width:600px){
+  .slot,.letterTile{
+    width:70px;
+    height:70px;
+    font-size:2rem;
+  }
+}
+</style>
 </head>
 
 <body>
-<!-- INTRO-OVERLAY -->
-<div id="introOverlay" class="fullOverlay">
-  <div class="introBox">
-    <div class="introInner">
-      <img src="Weihnachtsmann.jpg" class="intro-zirbel">
 
-      <h2 class="introTitle">Die Suche nach dem letzten Weihnachtszauber</h2>
-
-      <p class="introText">
-        In der längsten Nacht des Winters liegt das alte Haus still im Schnee – und doch scheint es zu atmen.
-  Drinnen flackert ein schwaches Licht, als würde jemand warten. Vor langer Zeit vergaß das Christkind hier ein letztes Geschenk.
-  Eine Truhe, versiegelt mit einem Zahlencode, den selbst der Himmel nicht mehr kennt. Seit jener Nacht ruht der Weihnachtszauber in ihr – unerweckt, unerlöst.
-  Doch das Haus ist nicht stumm. Es flüstert Rätsel durch seine Flure, lässt Schatten tanzen und Kerzen flackern, als wollten sie führen.
-  Wer genau hinhört, spürt, dass die Antworten überall verborgen sind – im Knirschen des Schnees, im Wispern des Windes, in Zeichen, die nur im rechten Moment sichtbar werden.
-  Drei Ziffern öffnen die Truhe. Zwölf schwere Rätsel führen dorthin.
-  Folge dem Ruf der Nacht, lausche den Hinweisen – und vielleicht wirst du das Geschenk finden, das das Christkind selbst vergessen hat.
-      </p>
-
-      <button id="readBtn" class="secondary">▶️ Vorlesen</button>
-      <audio id="introAudio" preload="auto" src="ElevenLabs_Text_to_Speech_audio.mp3"></audio>
-    </div>
-
-    <div class="popupFooter">
-      <button id="startBtn" disabled>Abenteuer beginnen ✨</button>
-    </div>
-  </div>
-</div>
-
-<!-- POPUP NACH BUCHSTABEN -->
-<div id="letterPopup" class="fullOverlay" style="display:none;">
-  <div class="popupBox">
-    <div class="popupInner">
-      <img src="Weihnachtsmann.jpg" class="popup-zirbel">
-      <h2>Super gemacht! 🎅✨</h2>
-      <p>Du hast den nächsten magischen Buchstaben gefunden – weiter so!</p>
-    </div>
-
-    <div class="popupFooter">
-      <button id="popupNextBtn">Weiter ➜</button>
-    </div>
-  </div>
-</div>
-
-<!-- HAUPT-RÄTSEL -->
+<!-- Hapimag Logo -->
+<img id="hapilogo" src="Hapimag Logo.png">
 <main class="wrap">
-  <section class="card" id="mainCard" style="display:none;">
+  <section class="card">
 
-    <header class="head">
-      <img src="Hapimag Logo.png" class="logo-small">
+    <!-- INTRO -->
+    <div id="introOverlay" class="fullOverlay">
+      <div class="popupBox" style="max-width:700px;">
+        <h2>Der letzte Weihnachtszauber</h2>
 
-      <div>
-        <h1 class="title">Winterliche Rätseltour</h1>
-        <p class="sub">Sammle alle 12 Buchstaben – am Ende entsteht das Lösungswort!</p>
-        <span class="badge" id="badge">Station</span>
+        <p style="text-align:left;">
+          In der längsten Nacht des Winters liegt das alte Haus still im Schnee – und doch scheint es zu atmen.
+          Drinnen flackert ein schwaches Licht, als würde jemand warten. Vor langer Zeit vergaß das Christkind hier ein letztes Geschenk.
+          Eine Truhe, versiegelt mit einem Zahlencode, den selbst der Himmel nicht mehr kennt. Seit jener Nacht ruht der Weihnachtszauber in ihr – unerweckt, unerlöst.
+          <br><br>
+          Doch das Haus ist nicht stumm. Es flüstert Rätsel durch seine Flure, lässt Schatten tanzen und Kerzen flackern, als wollten sie führen.
+          Wer genau hinhört, spürt, dass die Antworten überall verborgen sind – im Knirschen des Schnees, im Wispern des Windes, in Zeichen, die nur im rechten Moment sichtbar werden.
+          <br><br>
+          Drei Ziffern öffnen die Truhe. Zwölf schwere Rätsel führen dorthin.
+          Folge dem Ruf der Nacht, lausche den Hinweisen – und vielleicht wirst du das Geschenk finden, das das Christkind selbst vergessen hat.
+        </p>
+
+        <button id="introStart">Weiter zur Rätseltour ✨</button>
       </div>
+    </div>
 
-      <!-- Kleiner Weihnachtsbaum als Icon -->
-      <svg class="tree-icon" viewBox="0 0 64 64">
-        <polygon points="32,4 8,44 56,44" fill="#1f6f49"/>
-        <polygon points="32,14 16,40 48,40" fill="#2a8e60"/>
-        <rect x="27" y="44" width="10" height="14" fill="#8b5a2b"/>
-      </svg>
+    <!-- HEADER -->
+    <header class="head">
+      <img src="Weihnachtmann.png" style="width:60px">
+      <div>
+        <h1 class="title">Der letzte Weihnachtszauber</h1>
+        <p class="sub">Sammle alle 12 Buchstaben – am Ende entsteht das Lösungswort!</p>
+        <span class="badge" id="badge"></span>
+      </div>
+      <img src="Weihnachtmann.png" style="width:60px">
     </header>
 
     <h2 id="riddleTitle">Rätsel</h2>
     <p id="riddleText"></p>
 
     <label>Deine Antwort</label>
-    <input id="answerInput" autocomplete="off" placeholder="Antwort eingeben…">
+    <input id="answerInput">
 
     <button id="checkAnswerBtn" style="margin-top:1rem;">Antwort prüfen</button>
 
     <div class="err" id="errBox">Leider falsch – versuch's nochmal!</div>
-    <div class="ok" id="okBox">Richtig! Gut gemacht!</div>
+    <div class="ok" id="okBox">Richtig!</div>
 
     <div id="locBox" class="loc"></div>
 
     <div id="letterStep" style="display:none;">
       <label>Buchstabe vom Ort</label>
-      <input id="letterInput" maxlength="1" placeholder="Buchstabe eingeben…">
+      <input id="letterInput" maxlength="1">
     </div>
 
   </section>
 </main>
 
+<!-- POPUP -->
+<div id="letterPopup" class="fullOverlay" style="display:none;">
+  <div class="popupBox">
+    <img src="Weihnachtsmann.png" class="popup-zirbel">
+    <h2>Super! 🎄✨</h2>
+    <p id="popupText">Du hast einen Buchstaben gefunden!</p>
+    <button id="popupNextBtn">Weiter</button>
+  </div>
+</div>
+
 <!-- PUZZLE -->
 <div id="puzzleOverlay" class="fullOverlay" style="display:none;">
   <div class="puzzleBox">
     <h2>Buchstaben sortieren</h2>
-    <p>Ziehe die 12 Buchstaben in die richtige Reihenfolge, um das Lösungswort zu bilden.</p>
-
+    <p>Ziehe die Buchstaben in die richtige Reihenfolge.</p>
     <div class="puzzleSlots" id="puzzleSlots"></div>
     <div class="puzzleLetters" id="puzzleLetters"></div>
   </div>
@@ -318,123 +276,65 @@
 
 <!-- FINALE -->
 <div id="finalOverlay" class="fullOverlay" style="display:none;">
-  <div class="introBox">
-    <div class="introInner" style="text-align:center;">
-      <img src="Weihnachtsmann.jpg" class="intro-zirbel">
-
-      <h2 class="introTitle">Du hast es geschafft! 🎄</h2>
-
-      <p>
-        Du hast alle 12 Buchstaben richtig sortiert!<br><br>
-        Gehe nun zur Rezeption und sage das Lösungswort.<br>
-        Dort erwartet dich der letzte Weihnachtszauber! ✨
-      </p>
-    </div>
-
-    <div class="popupFooter">
-      <button onclick="location.reload()">Nochmal spielen</button>
-    </div>
+  <div class="popupBox">
+    <img src="Weihnachtsmann.png" class="popup-zirbel">
+    <h2>Du hast es geschafft! 🎁</h2>
+    <p>Gib das Lösungswort an der Rezeption ab.</p>
+    <button onclick="location.reload()">Nochmal spielen</button>
   </div>
 </div>
 <script>
-/* ============================================================
-   VARIABLEN
-============================================================ */
-let currentStation = 1;
-let collectedLetters = [];
+let currentStation=1;
+let collectedLetters=[];
+let currentLevel=1;
 
-/* Buchstaben in gemischter Reihenfolge für WINTERWUNDER */
-const mixedLetters = ["N","W","E","R","U","I","D","T","R","N","E","W"];
-
-/* ============================================================
-   RÄTSEL (12 Stück)
-============================================================ */
-const riddles = [
-  null,
-  {q:"Ich zähle Wochen bis zur Nacht, die Hoffnung bringt in sanfter Pracht. Vier Kerzen brennen leis' und sacht – wer bin ich?", a:["adventskranz","adventkranz","der adventskranz"]},
-  {q:"Ein Zweig, der küsst – man glaubt es kaum. Wer drunter steht, erfüllt den Traum. Wie heiß ich?", a:["mistel","mistelzweig","der mistelzweig"]},
-  {q:"Ich ziehe Schlitten durch die Nacht, mit glänzend’ Fell und stiller Pracht. Wer bin ich?", a:["rentier","rentiere"]},
-  {q:"Ich fliege nicht, doch rase schnell. Über weißen Schnee, ganz hell. Du sitzt auf mir – wer bin ich?", a:["schlitten","rodel"]},
-  {q:"Sechs Zacken, süß und sternenklar – ich schmecke wunderbar. Wer bin ich?", a:["zimtstern","der zimtstern"]},
-  {q:"Ich dufte warm nach Honig, fein. Mit Zuckerguss – so soll es sein. Wie heiß ich?", a:["lebkuchen","lebkuchenherz"]},
-  {q:"Rot im Winter, strahlend schön – man sieht mich auf dem Fenster stehn. Wer bin ich?", a:["weihnachtsstern"]},
-  {q:"Aus Holz gemacht und still verehrt: ein Kind, das man seit langem ehrt. Wie nennt man mich?", a:["krippe","weihnachtskrippe"]},
-  {q:"Ich funkle hell und rund am Baum – ein Glaskleid wie ein Zaubertraum. Wer bin ich?", a:["christbaumkugel","kugel","weihnachtskugel"]},
-  {q:"Ich komme nur am 6. Tag, bring Nüsse, Mandeln – wie ich’s mag. Wer bin ich?", a:["nikolaus","sankt nikolaus"]},
-  {q:"Ich leuchte über Stall und Nacht, hab’ Könige zum Ziel gebracht. Wer bin ich?", a:["stern von bethlehem","bethlehemstern"]},
-  {q:"Die Nacht, in der es jeder sagt: Heute wird Bescherung gemacht! Wie heiß ich?", a:["heiligabend","heiliger abend","christabend"]}
+/* RÄTSEL */
+const riddles=[
+  {q:"Ich zähle Wochen bis zur Nacht … wer darf auf eurem Tisch stehen?", a:["adventskranz"]},
+  {q:"Ein Zweig, der Küsse bringt … wie heiß' ich?", a:["mistel","mistelzweig"]},
+  {q:"Ich ziehe den Schlitten durch die Nacht …", a:["rentier"]},
+  {q:"Ich fliege ohne Flügel den Hang hinunter …", a:["schlitten","rodel"]},
+  {q:"Sechs Zacken, süß gewürzt …", a:["zimtstern"]},
+  {q:"Honig, Nelken, Marktstände …", a:["lebkuchen"]},
+  {q:"Rote Blätter, weiße Sterne …", a:["weihnachtsstern"]},
+  {q:"Stroh, Kind, Holzfiguren …", a:["krippe"]},
+  {q:"Ich funkle rund am Baum …", a:["kugel","christbaumkugel"]},
+  {q:"Ich komme am 6.12. …", a:["nikolaus"]},
+  {q:"Ich wies den Königen den Weg …", a:["stern von bethlehem","bethlehemstern"]},
+  {q:"Der Abend, an dem die Glocken leise werden …", a:["heiligabend","heilige nacht"]}
 ];
 
-/* ============================================================
-   ORTE + BUCHSTABEN (12)
-============================================================ */
-const stations = {
-  1:{place:"Bücherecke", letter:mixedLetters[0]},
-  2:{place:"Skikeller", letter:mixedLetters[1]},
-  3:{place:"Honesty Shop", letter:mixedLetters[2]},
-  4:{place:"Müllraum", letter:mixedLetters[3]},
-  5:{place:"Sauna", letter:mixedLetters[4]},
-  6:{place:"Oberstes Stockwerk", letter:mixedLetters[5]},
-  7:{place:"Wohnungstür 11", letter:mixedLetters[6]},
-  8:{place:"Außeneingang Skikeller", letter:mixedLetters[7]},
-  9:{place:"Weihnachtsbaum", letter:mixedLetters[8]},
-  10:{place:"Wohnungstür 35", letter:mixedLetters[9]},
-  11:{place:"Eingang Heizkeller", letter:mixedLetters[10]},
-  12:{place:"Rezeption", letter:mixedLetters[11]}
+/* ORTE + BUCHSTABEN (WINTERWUNDER gemischt) */
+const lettersMapped=[
+  null,
+  {place:"Bücherecke", letter:"N"},
+  {place:"Skikeller", letter:"R"},
+  {place:"Honesty Shop", letter:"E"},
+  {place:"Müllraum", letter:"W"},
+  {place:"Sauna", letter:"U"},
+  {place:"Oberstes Stockwerk", letter:"D"},
+  {place:"Wohnungstür 11", letter:"T"},
+  {place:"Außeneingang Skikeller", letter:"I"},
+  {place:"Weihnachtsbaum", letter:"N"},
+  {place:"Wohnungstür 35", letter:"W"},
+  {place:"Eingang Heizkeller", letter:"E"},
+  {place:"Rezeption", letter:"R"}
+];
+
+/* START */
+document.getElementById("introStart").onclick=()=>{
+  document.getElementById("introOverlay").style.display="none";
+  loadStation(1);
 };
 
-/* ============================================================
-   INTRO / VORLESEN
-============================================================ */
-const audio = document.getElementById("introAudio");
-const readBtn = document.getElementById("readBtn");
-const startBtn = document.getElementById("startBtn");
-let isPlaying = false;
-
-startBtn.disabled = true;
-
-readBtn.addEventListener("click", async ()=>{
-  if(!isPlaying){
-    audio.currentTime = 0;
-    await audio.play();
-    isPlaying = true;
-    readBtn.textContent = "⏸️ Pause";
-  } else {
-    audio.pause();
-    isPlaying = false;
-    readBtn.textContent = "▶️ Vorlesen";
-  }
-});
-
-audio.addEventListener("ended", ()=>{
-  isPlaying = false;
-  readBtn.textContent = "▶️ Vorlesen";
-  startBtn.disabled = false;
-});
-
-/* Start */
-startBtn.addEventListener("click", ()=>{
-  document.getElementById("introOverlay").style.display="none";
-  document.getElementById("mainCard").style.display="block";
-  loadStation(1);
-});
-
-/* ============================================================
-   STATION LADEN
-============================================================ */
+/* LADEN */
 function loadStation(n){
-  currentStation = n;
+  currentStation=n;
+  if(n>12){ startPuzzle(); return; }
 
-  if(n > 12){
-    startPuzzle();
-    return;
-  }
-
-  const r = riddles[n];
-
-  document.getElementById("badge").textContent = `Station ${n} / 12`;
-  document.getElementById("riddleTitle").textContent = "Rätsel";
-  document.getElementById("riddleText").textContent = r.q;
+  let r=riddles[n-1];
+  document.getElementById("badge").textContent=`Station ${n} / 12`;
+  document.getElementById("riddleText").textContent=r.q;
 
   document.getElementById("answerInput").value="";
   document.getElementById("letterInput").value="";
@@ -444,14 +344,10 @@ function loadStation(n){
   document.getElementById("letterStep").style.display="none";
 }
 
-/* ============================================================
-   ANTWORT PRÜFEN
-============================================================ */
-document.getElementById("checkAnswerBtn").addEventListener("click", ()=>{
-  const val = normalize(document.getElementById("answerInput").value);
-  const correct = riddles[currentStation].a;
-
-  const ok = correct.some(c => normalize(c) === val);
+/* ANTWORT PRÜFEN */
+document.getElementById("checkAnswerBtn").onclick=()=>{
+  let val=normalize(document.getElementById("answerInput").value);
+  let ok=riddles[currentStation-1].a.some(a=>normalize(a)===val);
 
   if(!ok){
     document.getElementById("errBox").style.display="block";
@@ -461,175 +357,103 @@ document.getElementById("checkAnswerBtn").addEventListener("click", ()=>{
   document.getElementById("errBox").style.display="none";
   document.getElementById("okBox").style.display="block";
 
-  const st = stations[currentStation];
-  document.getElementById("locBox").style.display="block";
-  document.getElementById("locBox").innerHTML =
+  const st=lettersMapped[currentStation];
+  document.getElementById("locBox").innerHTML=
     `📍 <b>Ort:</b> ${st.place}<br>Suche dort den Buchstaben!`;
-
+  document.getElementById("locBox").style.display="block";
   document.getElementById("letterStep").style.display="block";
-});
+};
 
-/* ============================================================
-   BUCHSTABE PRÜFEN
-============================================================ */
-document.getElementById("letterInput").addEventListener("input", ()=>{
-  const val = document.getElementById("letterInput").value.trim().toUpperCase();
-  const needed = stations[currentStation].letter;
+/* BUCHSTABE PRÜFEN */
+document.getElementById("letterInput").addEventListener("input",()=>{
+  let val=document.getElementById("letterInput").value.trim().toUpperCase();
+  let needed=lettersMapped[currentStation].letter;
 
-  if(val === needed){
+  if(val===needed){
     collectedLetters.push(val);
     document.getElementById("letterPopup").style.display="flex";
   }
 });
 
-document.getElementById("popupNextBtn").addEventListener("click", ()=>{
+document.getElementById("popupNextBtn").onclick=()=>{
   document.getElementById("letterPopup").style.display="none";
   loadStation(currentStation+1);
-});
+};
 
-/* ============================================================
-   NORMALISIEREN
-============================================================ */
-function normalize(s){
-  return s.toLowerCase().trim()
-    .replace(/ä/g,'ae')
-    .replace(/ö/g,'oe')
-    .replace(/ü/g,'ue')
-    .replace(/ß/g,'ss');
-}
-
-/* ============================================================
-   PUZZLE START
-============================================================ */
-let draggedTile = null;
-
+/* PUZZLE */
 function startPuzzle(){
-  document.getElementById("mainCard").style.display="none";
+  document.querySelector(".card").style.display="none";
   document.getElementById("puzzleOverlay").style.display="flex";
 
-  const slots = document.getElementById("puzzleSlots");
-  slots.innerHTML = "";
+  const slots=document.getElementById("puzzleSlots");
+  const pool=document.getElementById("puzzleLetters");
 
-  for(let i = 0; i < 12; i++){
-    const box = document.createElement("div");
-    box.className = "slot";
-    box.dataset.index = i;
+  slots.innerHTML="";
+  pool.innerHTML="";
 
-    box.addEventListener("dragover", allowDrop);
-    box.addEventListener("drop", dropIntoSlot);
-
-    slots.appendChild(box);
+  for(let i=0;i<12;i++){
+    let s=document.createElement("div");
+    s.className="slot";
+    slots.appendChild(s);
   }
 
-  const letters = [...collectedLetters];
-  letters.sort(()=> Math.random() - 0.5);
+  let mix=[...collectedLetters];
+  mix.sort(()=>Math.random()-0.5);
 
-  const pool = document.getElementById("puzzleLetters");
-  pool.innerHTML = "";
+  mix.forEach(l=>{
+    let t=document.createElement("div");
+    t.className="letterTile";
+    t.textContent=l;
+    pool.appendChild(t);
 
-  letters.forEach(L => createTile(L, pool));
-
-  pool.addEventListener("dragover", allowDrop);
-  pool.addEventListener("drop", dropIntoPool);
-}
-
-/* TILE ERSTELLEN */
-function createTile(letter, parent){
-  const t = document.createElement("div");
-  t.className = "letterTile";
-  t.textContent = letter;
-  t.dataset.letter = letter;
-  t.draggable = true;
-
-  t.addEventListener("dragstart", dragStart);
-  t.addEventListener("dragend", dragEnd);
-
-  parent.appendChild(t);
-}
-
-/* DRAG + DROP */
-function dragStart(){
-  draggedTile = this;
-  this.style.opacity = "0.4";
-}
-
-function dragEnd(){
-  this.style.opacity = "1";
-  draggedTile = null;
-}
-
-function allowDrop(e){
-  e.preventDefault();
-}
-
-function dropIntoSlot(e){
-  e.preventDefault();
-  if(!draggedTile) return;
-
-  const letter = draggedTile.dataset.letter;
-
-  if(this.textContent.trim() !== ""){
-    const oldLetter = this.textContent.trim();
-    createTile(oldLetter, document.getElementById("puzzleLetters"));
-  }
-
-  this.textContent = letter;
-  draggedTile.remove();
-
-  checkSolved();
-}
-
-function dropIntoPool(e){
-  e.preventDefault();
-  if(!draggedTile) return;
-
-  const pool = document.getElementById("puzzleLetters");
-  const letter = draggedTile.dataset.letter;
-
-  document.querySelectorAll(".slot").forEach(slot=>{
-    if(slot.textContent.trim() === letter){
-      slot.textContent = "";
-    }
+    t.onclick=()=>tryPlace(t);
   });
+}
 
-  createTile(letter, pool);
-  draggedTile.remove();
-
+function tryPlace(tile){
+  let empty=[...document.querySelectorAll(".slot")].find(s=>s.textContent==="");
+  if(!empty)return;
+  empty.textContent=tile.textContent;
+  tile.remove();
   checkSolved();
 }
 
-/* ============================================================
-   PRÜFEN OB PUZZLE GELÖST IST
-============================================================ */
 function checkSolved(){
-  const word = [...document.querySelectorAll(".slot")]
-               .map(s => s.textContent.trim())
-               .join("");
+  let word=[...document.querySelectorAll(".slot")]
+            .map(s=>s.textContent)
+            .join("");
 
-  if(word.length !== 12) return;
+  if(word.length<12)return;
 
-  if(word === "WINTERWUNDER"){
-    setTimeout(()=>{
-      document.getElementById("puzzleOverlay").style.display="none";
-      document.getElementById("finalOverlay").style.display="flex";
-    }, 300);
-  } else {
-    setTimeout(resetPuzzle, 500);
+  if(word==="WINTERWUNDER"){
+    document.getElementById("puzzleOverlay").style.display="none";
+    document.getElementById("finalOverlay").style.display="flex";
+  }else{
+    resetPuzzle();
   }
 }
 
-/* RESET */
 function resetPuzzle(){
-  const pool = document.getElementById("puzzleLetters");
-  pool.innerHTML = "";
-
-  document.querySelectorAll(".slot").forEach(slot=>{
-    const letter = slot.textContent.trim();
-    if(letter !== ""){
-      createTile(letter, pool);
-      slot.textContent = "";
+  let pool=document.getElementById("puzzleLetters");
+  pool.innerHTML="";
+  document.querySelectorAll(".slot").forEach(s=>{
+    if(s.textContent!==""){
+      let t=document.createElement("div");
+      t.className="letterTile";
+      t.textContent=s.textContent;
+      pool.appendChild(t);
+      t.onclick=()=>tryPlace(t);
+      s.textContent="";
     }
   });
+}
+
+function normalize(s){
+  return s.toLowerCase().trim()
+    .replace(/ä/g,"ae").replace(/ö/g,"oe")
+    .replace(/ü/g,"ue").replace(/ß/g,"ss");
 }
 </script>
 
+</body>
+</html>
