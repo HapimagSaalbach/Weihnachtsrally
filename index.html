@@ -250,34 +250,42 @@ input{
 <!-- Hapimag Logo -->
 <img src="hapimag_logo.png" id="hapimagLogo">
 
-<!-- INTRO OVERLAY -->
+<!-- INTRO -->
 <div id="introOverlay" class="fullOverlay">
   <div class="introBox">
     <div class="introInner">
+      <h2 class="introTitle">Der letzte Weihnachtszauber</h2>
 
-      <h2 class="introTitle" style="color:var(--rot-dunkel); margin-bottom:14px;">
-        Der letzte Weihnachtszauber
-      </h2>
+      <!-- Weihnachtsmann-Bild -->
+      <img src="Weihnachtsmann.jpg" class="intro-santa">
 
-      <img src="weihnachtsmann_popup.png" class="intro-zirbel">
-
-      <p class="introText" style="line-height:1.6; margin-top:14px;">
+      <p class="introText">
         In der längsten Nacht des Winters liegt das alte Haus still im Schnee – und doch scheint es zu atmen.
-        Drinnen flackert ein schwaches Licht, als würde jemand warten. Vor langer Zeit vergaß das Christkind hier
-        ein letztes Geschenk. Eine Truhe, versiegelt mit einem Zahlencode, den selbst der Himmel nicht mehr kennt.
-        Seit jener Nacht ruht der Weihnachtszauber in ihr – unerweckt, unerlöst.
+        Drinnen flackert ein schwaches Licht, als würde jemand warten. Vor langer Zeit vergaß das Christkind hier ein letztes Geschenk.
+        Eine Truhe, versiegelt mit einem Zahlencode, den selbst der Himmel nicht mehr kennt. Seit jener Nacht ruht der Weihnachtszauber in ihr – unerweckt, unerlöst.
         <br><br>
-        Doch das Haus ist nicht stumm. Es flüstert Rätsel durch seine Flure, lässt Schatten tanzen und Kerzen flackern,
-        als wollten sie führen. Wer genau hinhört, spürt, dass die Antworten überall verborgen sind – im Knirschen des Schnees,
-        im Wispern des Windes, in Zeichen, die nur im rechten Moment sichtbar werden.
+        Doch das Haus ist nicht stumm. Es flüstert Rätsel durch seine Flure, lässt Schatten tanzen und Kerzen flackern, als wollten sie führen.
+        Wer genau hinhört, spürt, dass die Antworten überall verborgen sind – im Knirschen des Schnees, im Wispern des Windes, in Zeichen, die nur im rechten Moment sichtbar werden.
         <br><br>
-        Drei Ziffern öffnen die Truhe. Zwölf schwere Rätsel führen dorthin. Folge dem Ruf der Nacht, lausche den Hinweisen –
-        und vielleicht wirst du das Geschenk finden, das das Christkind selbst vergessen hat.
+        Drei Ziffern öffnen die Truhe. Zwölf schwere Rätsel führen dorthin.
+        Folge dem Ruf der Nacht, lausche den Hinweisen – und vielleicht wirst du das Geschenk finden, das das Christkind selbst vergessen hat.
       </p>
 
-      <button id="readIntro" class="secondary" style="margin-top:12px;">▶️ Vorlesen</button>
-      <audio id="introAudio" src="intro_audio.mp3"></audio>
+      <!-- Vorlesen Button -->
+      <button id="readIntro" class="secondary">▶️ Vorlesen</button>
+
+      <!-- AUDIO -->
+      <audio id="introAudio" preload="auto" src="ElevenLabs_Text_to_Speech_audio.mp3"></audio>
+
     </div>
+
+    <div class="popupFooter">
+      <!-- Weiter erst NACH Audio -->
+      <button id="startBtn" disabled style="display:none;">Weiter zur Rätseltour ✨</button>
+    </div>
+  </div>
+</div>
+
 
     <div style="padding:16px; text-align:center; border-top:1px solid #ffe2e2; background:#fff9f9;">
       <button id="startBtn" disabled>Weiter zur Rätseltour ✨</button>
@@ -766,3 +774,4 @@ function resetPuzzle(){
 </script>
 </body>
 </html>
+
