@@ -263,14 +263,79 @@ input{
 }
 
 /* MOBILE */
-@media(max-width:600px){
-  .santa-mini{ width:60px; }
-  .slot, .letterTile{
-    width:70px;
-    height:70px;
+@media (max-width: 600px){
+
+  .santa-mini{
+    width:60px;
+    margin:auto;
   }
+
+  body{
+    background-attachment: scroll;
+  }
+
+  .wrap{
+    padding:12px;
+  }
+
+  .card{
+    padding:18px;
+    margin-top:14px;
+  }
+
+  .head{
+    grid-template-columns: 1fr;
+    text-align:center;
+  }
+
+  .title{
+    font-size:1.5rem;
+  }
+
+  .sub{
+    font-size:0.95rem;
+  }
+
+  input{
+    font-size:1.05rem;
+    padding:1rem;
+  }
+
+  button{
+    width:100%;
+    padding:1.1rem;
+    font-size:1.05rem;
+  }
+
+  .introText{
+    font-size:0.95rem;
+  }
+
+  .intro-santa{
+    max-width:200px !important;
+  }
+
+  .popup-santa{
+    max-width:200px;
+  }
+
+  .slot,
+  .letterTile{
+    width:68px;
+    height:68px;
+    font-size:1.6rem;
+  }
+
+  .puzzleBox{
+    padding:18px;
+  }
+
+  .footer{
+    font-size:0.8rem;
+  }
+
 }
-</style>
+  </style>
 </head>
 <body>
 <!-- INTRO OVERLAY -->
@@ -796,4 +861,5 @@ function resetPuzzle(){
 }
 
 </script>
+
 
